@@ -22,6 +22,8 @@ jobs:
 
       - name: Set up Go
         uses: actions/setup-go@v6
+        with:
+          go-version: '1.25'
 
       - name: Configure git for tests
         run: |
@@ -79,6 +81,8 @@ jobs:
 
       - name: Set up Go
         uses: actions/setup-go@v6
+        with:
+          go-version: '1.25'
 
       - name: Build binary
         env:
