@@ -97,20 +97,29 @@ Download pre-built binaries from the [releases page](https://github.com/viicslen
 **Linux / macOS:**
 
 ```bash
-# Download and extract (replace VERSION and PLATFORM with your target)
-curl -L https://github.com/viicslen/worktrees/releases/latest/download/wtm-linux-amd64.tar.gz | tar xz
+# Download binary (replace PLATFORM with your target)
+curl -L -o wtm https://github.com/viicslen/worktrees/releases/latest/download/wtm-linux-amd64
 
-# Move to PATH
+# Make executable and move to PATH
+chmod +x wtm
 sudo mv wtm /usr/local/bin/
+```
+
+**Windows (PowerShell):**
+
+```powershell
+# Download binary
+Invoke-WebRequest -Uri "https://github.com/viicslen/worktrees/releases/latest/download/wtm-windows-amd64.exe" -OutFile "wtm.exe"
+
+# Move to a directory in your PATH (example)
+Move-Item wtm.exe C:\Windows\System32\wtm.exe
 ```
 
 Available builds:
 
-- `wtm-linux-amd64.tar.gz` - Linux x86_64
-- `wtm-linux-arm64.tar.gz` - Linux ARM64
-- `wtm-darwin-amd64.tar.gz` - macOS Intel
-- `wtm-darwin-arm64.tar.gz` - macOS Apple Silicon
-- `wtm-windows-amd64.zip` - Windows x86_64
+- `wtm-linux-amd64` - Linux x86_64
+- `wtm-darwin-amd64` - macOS Intel
+- `wtm-windows-amd64.exe` - Windows x86_64
 
 ### Build from Source
 

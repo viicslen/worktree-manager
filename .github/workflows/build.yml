@@ -90,57 +90,34 @@ jobs:
           GOARCH: ${{ matrix.goarch }}
           CGO_ENABLED: 0
         run: |
-          go build -ldflags="-s -w" -o wtm${{ matrix.os == 'windows' && '.exe' || '' }} .
+          go build -ldflags="-s -w" -o wtm-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.os == 'windows' && '.exe' || '' }} .
 
-      - name: Create archive (Unix)
+      - name: Generate checksum (Unix)
         if: matrix.os != 'windows'
         run: |
-          tar -czf wtm-${{ matrix.os }}-${{ matrix.arch }}.tar.gz wtm
-          sha256sum wtm-${{ matrix.os }}-${{ matrix.arch }}.tar.gz > wtm-${{ matrix.os }}-${{ matrix.arch }}.tar.gz.sha256
+          sha256sum wtm-${{ matrix.os }}-${{ matrix.arch }} > wtm-${{ matrix.os }}-${{ matrix.arch }}.sha256
 
-      - name: Create archive (Windows)
+      - name: Generate checksum (Windows)
         if: matrix.os == 'windows'
         shell: pwsh
         run: |
-          Compress-Archive -Path wtm.exe -DestinationPath wtm-${{ matrix.os }}-${{ matrix.arch }}.zip
-          (Get-FileHash -Algorithm SHA256 wtm-${{ matrix.os }}-${{ matrix.arch }}.zip).Hash | Out-File -FilePath wtm-${{ matrix.os }}-${{ matrix.arch }}.zip.sha256
+          (Get-FileHash -Algorithm SHA256 wtm-${{ matrix.os }}-${{ matrix.arch }}.exe).Hash | Out-File -FilePath wtm-${{ matrix.os }}-${{ matrix.arch }}.exe.sha256
 
-      - name: Upload artifact (Unix)
-        if: matrix.os != 'windows'
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: wtm-${{ matrix.os }}-${{ matrix.arch }}
           path: |
-            wtm-${{ matrix.os }}-${{ matrix.arch }}.tar.gz
-            wtm-${{ matrix.os }}-${{ matrix.arch }}.tar.gz.sha256
+            wtm-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.os == 'windows' && '.exe' || '' }}
+            wtm-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.os == 'windows' && '.exe' || '' }}.sha256
 
-      - name: Upload artifact (Windows)
-        if: matrix.os == 'windows'
-        uses: actions/upload-artifact@v4
-        with:
-          name: wtm-${{ matrix.os }}-${{ matrix.arch }}
-          path: |
-            wtm-${{ matrix.os }}-${{ matrix.arch }}.zip
-            wtm-${{ matrix.os }}-${{ matrix.arch }}.zip.sha256
-
-      - name: Upload release assets (Unix)
-        if: github.event_name == 'release' && matrix.os != 'windows'
+      - name: Upload release assets
+        if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./wtm-${{ matrix.os }}-${{ matrix.arch }}.tar.gz
-          asset_name: wtm-${{ matrix.os }}-${{ matrix.arch }}.tar.gz
-          asset_content_type: application/gzip
-
-      - name: Upload release assets (Windows)
-        if: github.event_name == 'release' && matrix.os == 'windows'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./wtm-${{ matrix.os }}-${{ matrix.arch }}.zip
-          asset_name: wtm-${{ matrix.os }}-${{ matrix.arch }}.zip
-          asset_content_type: application/zip
+          asset_path: ./wtm-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.os == 'windows' && '.exe' || '' }}
+          asset_name: wtm-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.os == 'windows' && '.exe' || '' }}
+          asset_content_type: application/octet-stream
