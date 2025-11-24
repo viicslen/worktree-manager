@@ -17,6 +17,9 @@ buildGoModule rec {
     "-X main.version=${version}"
   ];
 
+  # Skip tests as they require git repository setup
+  doCheck = false;
+
   # Ensure git is available at runtime
   nativeBuildInputs = [ git ];
   propagatedBuildInputs = [ git ];
