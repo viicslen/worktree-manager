@@ -30,8 +30,8 @@ to fetch all remote branches. This setup is ideal for a worktree-based workflow.
 
 		fmt.Printf("Cloning %s into %s...\n", repoURL, dir)
 
-		// 1. git clone --bare <repo-url> <directory>
-		clone := exec.Command("git", "clone", "--bare", repoURL, dir)
+		// 1. git clone --bare --recurse-submodules <repo-url> <directory>
+		clone := exec.Command("git", "clone", "--bare", "--recurse-submodules", repoURL, dir)
 		clone.Stdout = os.Stdout
 		clone.Stderr = os.Stderr
 		if err := clone.Run(); err != nil {

@@ -240,7 +240,19 @@ func createWorktree(path, commitish, bareRepoRoot string) error {
 	addCmd.Env = append(os.Environ(), "GIT_DIR="+bareRepoRoot)
 	addCmd.Stdout = os.Stdout
 	addCmd.Stderr = os.Stderr
-	return addCmd.Run()
+	if err := addCmd.Run(); err != nil {
+		return err
+	}
+
+	// Initialize and update submodules if they exist
+	submoduleCmd := exec.Command("git", "submodule", "update", "--init", "--recursive")
+	submoduleCmd.Dir = path
+	submoduleCmd.Stdout = os.Stdout
+	submoduleCmd.Stderr = os.Stderr
+	// Ignore error - command exits successfully with no action if no submodules exist
+	_ = submoduleCmd.Run()
+
+	return nil
 }
 
 func init() {

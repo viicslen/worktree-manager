@@ -76,6 +76,14 @@ Example:
 			return fmt.Errorf("error creating worktree: %w", err)
 		}
 
+		// Initialize and update submodules if they exist
+		submoduleCmd := exec.Command("git", "submodule", "update", "--init", "--recursive")
+		submoduleCmd.Dir = worktreePath
+		submoduleCmd.Stdout = os.Stdout
+		submoduleCmd.Stderr = os.Stderr
+		// Ignore error - command exits successfully with no action if no submodules exist
+		_ = submoduleCmd.Run()
+
 		fmt.Printf("Successfully created worktree at %s\n", worktreePath)
 		return nil
 	},
