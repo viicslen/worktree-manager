@@ -30,20 +30,16 @@
 
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
-            go_1_23
+            go
             gotools
             gopls
-            go-outline
-            gocode
-            gopkgs
-            gocode-gomod
-            godef
-            golint
+            git
           ];
 
           shellHook = ''
             echo "Worktree Manager development environment"
             echo "Go version: $(go version)"
+            echo "Git version: $(git --version)"
           '';
         };
       }

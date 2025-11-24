@@ -17,12 +17,17 @@ buildGoModule rec {
     "-X main.version=${version}"
   ];
 
-  # Skip tests as they require git repository setup
-  doCheck = false;
-
-  # Ensure git is available at runtime
+  # Ensure git is available for tests and runtime
   nativeBuildInputs = [ git ];
   propagatedBuildInputs = [ git ];
+
+  # Configure git for tests
+  preCheck = ''
+    export HOME=$TMPDIR
+    git config --global user.email "test@example.com"
+    git config --global user.name "Test User"
+    git config --global init.defaultBranch main
+  '';
 
   meta = with lib; {
     description = "Worktree Manager - A CLI tool for managing git worktrees";
