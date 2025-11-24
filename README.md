@@ -90,10 +90,32 @@ environment.systemPackages = [ inputs.worktrees.packages.${system}.default ];
 home.packages = [ inputs.worktrees.packages.${system}.default ];
 ```
 
+### Pre-built Binaries
+
+Download pre-built binaries from the [releases page](https://github.com/viicslen/worktrees/releases):
+
+**Linux / macOS:**
+
+```bash
+# Download and extract (replace VERSION and PLATFORM with your target)
+curl -L https://github.com/viicslen/worktrees/releases/latest/download/wtm-linux-amd64.tar.gz | tar xz
+
+# Move to PATH
+sudo mv wtm /usr/local/bin/
+```
+
+Available builds:
+
+- `wtm-linux-amd64.tar.gz` - Linux x86_64
+- `wtm-linux-arm64.tar.gz` - Linux ARM64
+- `wtm-darwin-amd64.tar.gz` - macOS Intel
+- `wtm-darwin-arm64.tar.gz` - macOS Apple Silicon
+- `wtm-windows-amd64.zip` - Windows x86_64
+
 ### Build from Source
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/viicslen/worktrees.git
 cd worktrees
 go build -o wtm
 ```
