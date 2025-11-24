@@ -30,20 +30,64 @@ If you have [Nix](https://nixos.org/) with flakes enabled, you can run the tool 
 
 ```bash
 # Run directly from GitHub
-nix run github:viicslen/worktrees -- --help
+nix run github:viicslen/worktree-manager -- --help
 
 # Or run from a local clone
 nix run . -- --help
 ```
 
-To install permanently:
+To install permanently, add it to your system configuration:
 
-```bash
-# Install from GitHub
-nix profile install github:viicslen/worktrees
+**NixOS (configuration.nix or flake.nix):**
 
-# Or install from local clone
-nix profile install .
+```nix
+{
+  environment.systemPackages = [
+    (pkgs.callPackage (pkgs.fetchFromGitHub {
+      owner = "viicslen";
+      repo = "worktrees";
+      rev = "main";  # or a specific commit/tag
+      hash = "";     # nix will tell you the correct hash
+    }) { })
+  ];
+}
+```
+
+**Home Manager:**
+
+```nix
+{
+  home.packages = [
+    (pkgs.callPackage (pkgs.fetchFromGitHub {
+      owner = "viicslen";
+      repo = "worktrees";
+      rev = "main";  # or a specific commit/tag
+      hash = "";     # nix will tell you the correct hash
+    }) { })
+  ];
+}
+```
+
+**Flake-based NixOS/Home Manager:**
+
+Add to your flake inputs:
+
+```nix
+{
+  inputs = {
+    worktree-manager.url = "github:viicslen/worktree-manager";
+  };
+}
+```
+
+Then reference it in your packages:
+
+```nix
+# NixOS
+environment.systemPackages = [ inputs.worktrees.packages.${system}.default ];
+
+# Home Manager
+home.packages = [ inputs.worktrees.packages.${system}.default ];
 ```
 
 ### Build from Source
