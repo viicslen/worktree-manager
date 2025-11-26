@@ -34,6 +34,7 @@ Example:
   wtm switch feature/new    # Switch to feature/new branch
   wtm switch abc123         # Switch to commit abc123`,
 	Args: cobra.ExactArgs(1),
+
 	RunE: func(cmd *cobra.Command, args []string) error {
 		targetCommitish := args[0]
 
@@ -113,6 +114,17 @@ Example:
 		fmt.Printf("Successfully switched to %s\n", targetCommitish)
 		if currentLocation == "workspace" {
 			fmt.Println("Note: You may need to reload files in your IDE to see the changes")
+		}
+
+		// Restore persisted files if --restore flag is set
+		if cmd.Flags().Changed("restore") && cmd.Flag("restore").Value.String() == "true" {
+			sharedDir := filepath.Join(bareRepoRoot, "shared")
+			fmt.Println("Restoring all persisted files...")
+			// Use restoreAllFiles from restore.go
+			err := restoreAllFiles(sharedDir, workspacePath)
+			if err != nil {
+				return fmt.Errorf("error restoring persisted files: %w", err)
+			}
 		}
 
 		return nil
@@ -257,4 +269,5 @@ func createWorktree(path, commitish, bareRepoRoot string) error {
 
 func init() {
 	rootCmd.AddCommand(switchCmd)
+	switchCmd.Flags().Bool("restore", false, "Restore all persisted files after switching")
 }

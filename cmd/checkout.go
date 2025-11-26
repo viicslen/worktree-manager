@@ -84,6 +84,16 @@ Example:
 		// Ignore error - command exits successfully with no action if no submodules exist
 		_ = submoduleCmd.Run()
 
+		// Restore persisted files if --restore flag is set
+		if cmd.Flags().Changed("restore") && cmd.Flag("restore").Value.String() == "true" {
+			sharedDir := filepath.Join(cwd, "shared")
+			fmt.Println("Restoring all persisted files...")
+			err := restoreAllFiles(sharedDir, worktreePath)
+			if err != nil {
+				return fmt.Errorf("error restoring persisted files: %w", err)
+			}
+		}
+
 		fmt.Printf("Successfully created worktree at %s\n", worktreePath)
 		return nil
 	},
@@ -91,4 +101,5 @@ Example:
 
 func init() {
 	rootCmd.AddCommand(checkoutCmd)
+	checkoutCmd.Flags().Bool("restore", false, "Restore all persisted files after checkout")
 }
