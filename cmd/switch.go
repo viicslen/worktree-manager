@@ -233,12 +233,14 @@ func moveWorktree(source, destination, bareRepoRoot string) error {
 			return fmt.Errorf("failed to move directory: %w", err)
 		}
 
-		// Repair git worktree metadata
-		repairCmd := exec.Command("git", "worktree", "repair")
+		// Repair git worktree metadata from the moved worktree directory
+		// This updates the worktree's .git file to point to the correct location
+		// and updates the bare repo's worktree metadata to reflect the new path
+		repairCmd := exec.Command("git", "worktree", "repair", destination)
 		repairCmd.Dir = bareRepoRoot
 		repairCmd.Env = append(os.Environ(), "GIT_DIR="+bareRepoRoot)
-		if err := repairCmd.Run(); err != nil {
-			return fmt.Errorf("moved directory but failed to repair git metadata: %w", err)
+		if repairOutput, repairErr := repairCmd.CombinedOutput(); repairErr != nil {
+			return fmt.Errorf("moved directory but failed to repair git metadata: %w (output: %s)", repairErr, string(repairOutput))
 		}
 	}
 
